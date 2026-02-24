@@ -1,0 +1,151 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recordType",
+    "sourceKind",
+    "sourceId",
+    "sourceInput",
+    "sourceUrl",
+    "fetchedAt",
+    "runContext",
+    "metadata",
+    "summary",
+    "video"
+  ],
+  "properties": {
+    "recordType": { "type": "string", "enum": ["source_summary", "video"] },
+    "sourceKind": { "type": "string", "enum": ["video_url", "channel_url", "playlist_url", "search_url", "search_term"] },
+    "sourceId": { "type": "string" },
+    "sourceInput": { "type": "string" },
+    "sourceUrl": { "type": ["string", "null"] },
+    "fetchedAt": { "type": "string", "format": "date-time" },
+    "runContext": { "type": "object" },
+    "metadata": { "type": "object" },
+    "summary": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "entityType",
+        "id",
+        "title",
+        "url",
+        "description",
+        "channelName",
+        "channelUrl",
+        "itemCount",
+        "subscriberCount",
+        "totalViews",
+        "joinedDate",
+        "thumbnails",
+        "filtersApplied",
+        "itemsDiscovered",
+        "continuationsUsed"
+      ],
+      "properties": {
+        "entityType": { "type": "string", "enum": ["video_source", "channel", "playlist", "search"] },
+        "id": { "type": ["string", "null"] },
+        "title": { "type": ["string", "null"] },
+        "url": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "channelName": { "type": ["string", "null"] },
+        "channelUrl": { "type": ["string", "null"] },
+        "itemCount": { "type": ["integer", "null"] },
+        "subscriberCount": { "type": ["integer", "null"] },
+        "totalViews": { "type": ["integer", "null"] },
+        "joinedDate": { "type": ["string", "null"] },
+        "thumbnails": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "width", "height"],
+            "properties": {
+              "url": { "type": "string" },
+              "width": { "type": ["integer", "null"] },
+              "height": { "type": ["integer", "null"] }
+            }
+          }
+        },
+        "filtersApplied": { "type": "object" },
+        "itemsDiscovered": { "type": "integer" },
+        "continuationsUsed": { "type": "integer" }
+      }
+    },
+    "video": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "url",
+        "title",
+        "description",
+        "descriptionLinks",
+        "channelName",
+        "channelUrl",
+        "channelId",
+        "publishedAt",
+        "publishedLabel",
+        "durationSeconds",
+        "durationLabel",
+        "viewCount",
+        "likeCount",
+        "commentCount",
+        "isLive",
+        "isShort",
+        "thumbnails",
+        "hashtags",
+        "availability",
+        "language",
+        "captionsAvailable"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "description": { "type": ["string", "null"] },
+        "descriptionLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["text", "url"],
+            "properties": {
+              "text": { "type": ["string", "null"] },
+              "url": { "type": "string" }
+            }
+          }
+        },
+        "channelName": { "type": ["string", "null"] },
+        "channelUrl": { "type": ["string", "null"] },
+        "channelId": { "type": ["string", "null"] },
+        "publishedAt": { "type": ["string", "null"] },
+        "publishedLabel": { "type": ["string", "null"] },
+        "durationSeconds": { "type": ["integer", "null"] },
+        "durationLabel": { "type": ["string", "null"] },
+        "viewCount": { "type": ["integer", "null"] },
+        "likeCount": { "type": ["integer", "null"] },
+        "commentCount": { "type": ["integer", "null"] },
+        "isLive": { "type": ["boolean", "null"] },
+        "isShort": { "type": ["boolean", "null"] },
+        "thumbnails": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url", "width", "height"],
+            "properties": {
+              "url": { "type": "string" },
+              "width": { "type": ["integer", "null"] },
+              "height": { "type": ["integer", "null"] }
+            }
+          }
+        },
+        "hashtags": { "type": "array", "items": { "type": "string" } },
+        "availability": { "type": ["string", "null"] },
+        "language": { "type": ["string", "null"] },
+        "captionsAvailable": { "type": ["boolean", "null"] }
+      }
+    }
+  }
+}

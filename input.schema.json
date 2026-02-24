@@ -1,0 +1,179 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "startUrls": {
+      "type": "array",
+      "title": "YouTube URLs",
+      "description": "Video, channel, playlist, or search result URLs.",
+      "items": { "type": "string", "format": "uri" },
+      "default": [],
+      "x-ui-section": "Input",
+      "x-ui-order": 1,
+      "x-ui-basic": true,
+      "x-bulk-editable": true,
+      "x-array-item-label": "URL"
+    },
+    "searchTerms": {
+      "type": "array",
+      "title": "Search terms",
+      "description": "YouTube search keywords.",
+      "items": { "type": "string" },
+      "default": [],
+      "x-ui-section": "Input",
+      "x-ui-order": 2,
+      "x-ui-basic": true,
+      "x-bulk-editable": true,
+      "x-array-item-label": "Search term"
+    },
+    "crawlerType": {
+      "type": "string",
+      "title": "Crawler Type",
+      "enum": ["camoufox", "playwright", "http:fast"],
+      "default": "camoufox",
+      "x-ui-section": "Input",
+      "x-ui-order": 3,
+      "x-ui-basic": true
+    },
+    "searchSort": {
+      "type": "string",
+      "title": "Search sort",
+      "enum": ["relevance", "upload_date", "view_count"],
+      "default": "relevance",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 4
+    },
+    "searchDateFilter": {
+      "type": "string",
+      "title": "Search date filter",
+      "enum": ["any", "hour", "today", "week", "month", "year"],
+      "default": "any",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 5
+    },
+    "includeVideoTypes": {
+      "type": "array",
+      "title": "Video types",
+      "items": { "type": "string", "enum": ["video", "short", "live"] },
+      "default": ["video", "short", "live"],
+      "x-ui-section": "Search filters",
+      "x-ui-order": 6,
+      "x-bulk-editable": true,
+      "x-array-item-label": "Type"
+    },
+    "publishedAfter": {
+      "type": ["string", "null"],
+      "format": "date",
+      "default": null,
+      "title": "Published after",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 7
+    },
+    "publishedBefore": {
+      "type": ["string", "null"],
+      "format": "date",
+      "default": null,
+      "title": "Published before",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 8
+    },
+    "countryCode": {
+      "type": ["string", "null"],
+      "default": null,
+      "title": "Country code",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 9
+    },
+    "languageCode": {
+      "type": ["string", "null"],
+      "default": null,
+      "title": "Language code",
+      "x-ui-section": "Search filters",
+      "x-ui-order": 10
+    },
+    "maxResults": {
+      "type": "integer",
+      "title": "Max video results",
+      "minimum": 1,
+      "maximum": 50000,
+      "default": 200,
+      "x-ui-section": "Runtime limits",
+      "x-ui-order": 11,
+      "x-ui-basic": true
+    },
+    "maxResultsPerSource": {
+      "type": "integer",
+      "title": "Max results per source",
+      "minimum": 1,
+      "maximum": 10000,
+      "default": 100,
+      "x-ui-section": "Runtime limits",
+      "x-ui-order": 12,
+      "x-ui-basic": true
+    },
+    "maxPagesPerSource": {
+      "type": "integer",
+      "title": "Max pages per source",
+      "minimum": 1,
+      "maximum": 1000,
+      "default": 5,
+      "x-ui-section": "Runtime limits",
+      "x-ui-order": 13
+    },
+    "maxRuntimeSeconds": {
+      "type": "integer",
+      "title": "Max runtime (seconds)",
+      "minimum": 10,
+      "maximum": 86400,
+      "default": 1800,
+      "x-ui-section": "Runtime limits",
+      "x-ui-order": 14,
+      "x-ui-basic": true
+    },
+    "maxIdleCycles": {
+      "type": "integer",
+      "title": "Max idle cycles",
+      "minimum": 1,
+      "maximum": 100,
+      "default": 5,
+      "x-ui-section": "Runtime limits",
+      "x-ui-order": 15
+    },
+    "includeSourceSummaryRecords": {
+      "type": "boolean",
+      "title": "Include source summary records",
+      "default": true,
+      "x-ui-section": "Output and results",
+      "x-ui-order": 16
+    },
+    "videoDetailMode": {
+      "type": "string",
+      "title": "Video detail mode",
+      "enum": ["full", "listing_only"],
+      "default": "full",
+      "x-ui-section": "Output and results",
+      "x-ui-order": 17
+    },
+    "dedupeWithinSource": {
+      "type": "boolean",
+      "title": "Dedupe within source",
+      "default": true,
+      "x-ui-section": "Output and results",
+      "x-ui-order": 18
+    },
+    "saveRawPayloads": {
+      "type": "boolean",
+      "title": "Save raw parser payloads (trimmed)",
+      "default": false,
+      "x-ui-section": "Output and results",
+      "x-ui-order": 19
+    },
+    "proxyRequired": {
+      "type": "boolean",
+      "title": "Proxy required for reliability",
+      "default": true,
+      "x-ui-section": "URL scraping",
+      "x-ui-order": 20
+    }
+  }
+}

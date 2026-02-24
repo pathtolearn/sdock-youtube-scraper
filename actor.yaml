@@ -1,0 +1,10 @@
+id: youtube-scraper
+name: YouTube Scraper
+runtime: node
+entry: src/main.ts
+engine_support:
+  - camoufox
+  - playwright
+version: 1.0.0
+schema_semver: 1.0.0
+description: YouTube metadata scraper with URL and search-term inputs using StealthDock runtime queue protocol.

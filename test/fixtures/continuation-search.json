@@ -1,0 +1,27 @@
+{
+  "onResponseReceivedCommands": [
+    {
+      "appendContinuationItemsAction": {
+        "continuationItems": [
+          {
+            "videoRenderer": {
+              "videoId": "svid003",
+              "title": {"runs": [{"text": "Search Result 3"}]},
+              "ownerText": {"runs": [{"text": "SearchChannel3"}]},
+              "lengthText": {"simpleText": "04:20"},
+              "viewCountText": {"simpleText": "42,001 views"},
+              "thumbnail": {"thumbnails": [{"url": "https://i.ytimg.com/vi/svid003/default.jpg", "width": 120, "height": 90}]}
+            }
+          },
+          {
+            "continuationItemRenderer": {
+              "continuationEndpoint": {
+                "continuationCommand": {"token": "SEARCH_CONT_TOKEN_2"}
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "startUrls": [
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://www.youtube.com/playlist?list=PL1234567890ABCDE"
+  ],
+  "searchTerms": ["lofi hip hop"],
+  "crawlerType": "camoufox",
+  "maxResults": 50,
+  "maxResultsPerSource": 25,
+  "maxPagesPerSource": 3,
+  "maxRuntimeSeconds": 900,
+  "maxIdleCycles": 5,
+  "includeSourceSummaryRecords": true,
+  "videoDetailMode": "full",
+  "dedupeWithinSource": true,
+  "searchSort": "relevance",
+  "searchDateFilter": "month",
+  "includeVideoTypes": ["video", "short"],
+  "publishedAfter": null,
+  "publishedBefore": null,
+  "countryCode": "US",
+  "languageCode": "en",
+  "saveRawPayloads": false,
+  "proxyRequired": true
+}

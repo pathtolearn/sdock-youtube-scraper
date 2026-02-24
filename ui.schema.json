@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "sections": [
+    { "id": "input", "title": "Input" },
+    { "id": "filters", "title": "Search filters" },
+    { "id": "urls", "title": "URL scraping" },
+    { "id": "runtime", "title": "Runtime limits" },
+    { "id": "output", "title": "Output and results" }
+  ]
+}
