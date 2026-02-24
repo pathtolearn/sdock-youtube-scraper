@@ -32,7 +32,7 @@ Optional but included:
 
 - [ ] `input.schema.json` is a JSON object
 - [ ] `output.schema.json` is a JSON object
-- [ ] At least one of `startUrls` or `searchTerms` is required (validated in runtime input parser)
+- [ ] At least one of `youtubeUrls` or `searchTerms` is required (validated in runtime input parser; legacy `startUrls` accepted for compatibility)
 - [ ] Output schema matches emitted union record fields
 - [ ] UI metadata (`x-ui-section`, `x-ui-order`) present for form layout
 

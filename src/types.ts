@@ -171,7 +171,7 @@ export type ClassifiedYoutubeUrl = {
 };
 
 export type YoutubeScraperInput = {
-  startUrls: string[];
+  youtubeUrls: string[];
   searchTerms: string[];
   crawlerType: CrawlerType;
   maxResults: number;

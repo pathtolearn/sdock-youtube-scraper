@@ -3,15 +3,20 @@ import { describe, expect, it } from "vitest";
 import { InputValidationError, parseRuntimeInput } from "../src/input";
 
 describe("parseRuntimeInput", () => {
-  it("rejects when both startUrls and searchTerms are empty", () => {
+  it("rejects when both youtubeUrls and searchTerms are empty", () => {
     expect(() => parseRuntimeInput({})).toThrow(InputValidationError);
   });
 
-  it("accepts URL-only payload and applies defaults", () => {
-    const parsed = parseRuntimeInput({ startUrls: ["https://youtu.be/abc123xyz00"] });
-    expect(parsed.startUrls[0]).toBe("https://www.youtube.com/watch?v=abc123xyz00");
+  it("accepts youtubeUrls payload and applies defaults", () => {
+    const parsed = parseRuntimeInput({ youtubeUrls: ["https://youtu.be/abc123xyz00"] });
+    expect(parsed.youtubeUrls[0]).toBe("https://www.youtube.com/watch?v=abc123xyz00");
     expect(parsed.searchTerms).toEqual([]);
     expect(parsed.crawlerType).toBe("camoufox");
+  });
+
+  it("accepts legacy startUrls alias for backward compatibility", () => {
+    const parsed = parseRuntimeInput({ startUrls: ["https://youtu.be/abc123xyz00"] });
+    expect(parsed.youtubeUrls[0]).toBe("https://www.youtube.com/watch?v=abc123xyz00");
   });
 
   it("accepts search-term-only payload", () => {
@@ -25,7 +30,7 @@ describe("parseRuntimeInput", () => {
   });
 
   it("rejects invalid YouTube hosts", () => {
-    expect(() => parseRuntimeInput({ startUrls: ["https://example.com"] })).toThrow("YouTube URLs");
+    expect(() => parseRuntimeInput({ youtubeUrls: ["https://example.com"] })).toThrow("YouTube URLs");
   });
 
   it("rejects invalid date ranges", () => {

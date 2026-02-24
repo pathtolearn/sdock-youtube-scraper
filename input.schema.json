@@ -2,7 +2,7 @@
   "type": "object",
   "additionalProperties": false,
   "properties": {
-    "startUrls": {
+    "youtubeUrls": {
       "type": "array",
       "title": "YouTube URLs",
       "description": "Video, channel, playlist, or search result URLs.",

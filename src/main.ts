@@ -382,7 +382,7 @@ async function seedInitialTasks(input: YoutubeScraperInput): Promise<void> {
   const items: Array<{ url: string; metadata: Record<string, unknown> }> = [];
   let index = 1;
 
-  for (const startUrl of input.startUrls) {
+  for (const startUrl of input.youtubeUrls) {
     const sourceId = makeSourceId(index++);
     const classified = classifyYoutubeUrl(startUrl);
     const seed = toSeedTaskFromClassified(classified, sourceId, startUrl, input.videoDetailMode);
@@ -436,7 +436,7 @@ async function main(): Promise<void> {
       requested_engine: input.crawlerType,
       selected_engine: engine.selected,
       proxy_required: input.proxyRequired,
-      start_url_count: input.startUrls.length,
+      start_url_count: input.youtubeUrls.length,
       search_term_count: input.searchTerms.length,
     },
     undefined,
@@ -459,7 +459,7 @@ async function main(): Promise<void> {
       nowMs: Date.now(),
       maxRuntimeSeconds: input.maxRuntimeSeconds,
       processedPages: processedPagesCounter.value,
-      maxPages: Math.max(input.maxPagesPerSource * (input.startUrls.length + input.searchTerms.length) * 5, 10),
+      maxPages: Math.max(input.maxPagesPerSource * (input.youtubeUrls.length + input.searchTerms.length) * 5, 10),
       emittedResults: emittedVideoCounter.value,
       maxResults: input.maxResults,
       idleCycles,

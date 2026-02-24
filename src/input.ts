@@ -9,7 +9,7 @@ import type {
 
 export type { CrawlerType, SearchDateFilter, SearchSort, VideoDetailMode, VideoType, YoutubeScraperInput } from "./types";
 
-const DEFAULTS: Omit<YoutubeScraperInput, "startUrls" | "searchTerms"> = {
+const DEFAULTS: Omit<YoutubeScraperInput, "youtubeUrls" | "searchTerms"> = {
   crawlerType: "camoufox",
   maxResults: 200,
   maxResultsPerSource: 100,
@@ -31,6 +31,7 @@ const DEFAULTS: Omit<YoutubeScraperInput, "startUrls" | "searchTerms"> = {
 };
 
 const KNOWN_KEYS = new Set<string>([
+  "youtubeUrls",
   "startUrls",
   "searchTerms",
   "crawlerType",
@@ -142,7 +143,7 @@ function normalizeYoutubeUrl(raw: string): string {
   }
   const host = parsed.hostname.toLowerCase();
   if (!YOUTUBE_HOSTS.has(host)) {
-    throw new InputValidationError(`startUrls must contain only YouTube URLs: ${raw}`);
+    throw new InputValidationError(`youtubeUrls must contain only YouTube URLs: ${raw}`);
   }
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
     throw new InputValidationError(`Unsupported URL protocol: ${raw}`);
@@ -232,11 +233,14 @@ export function parseRuntimeInput(raw: unknown): YoutubeScraperInput {
     }
   }
 
-  const startUrls = asStringArray(payload.startUrls, "startUrls").map(normalizeYoutubeUrl);
+  const youtubeUrls = [
+    ...asStringArray(payload.youtubeUrls, "youtubeUrls"),
+    ...asStringArray(payload.startUrls, "startUrls"),
+  ].map(normalizeYoutubeUrl);
   const searchTerms = asStringArray(payload.searchTerms, "searchTerms");
 
-  if (startUrls.length === 0 && searchTerms.length === 0) {
-    throw new InputValidationError("At least one of startUrls or searchTerms must be provided");
+  if (youtubeUrls.length === 0 && searchTerms.length === 0) {
+    throw new InputValidationError("At least one of youtubeUrls or searchTerms must be provided");
   }
 
   const crawlerType = asEnum<CrawlerType>(payload.crawlerType, "crawlerType", ["camoufox", "playwright", "http:fast"], DEFAULTS.crawlerType);
@@ -253,7 +257,7 @@ export function parseRuntimeInput(raw: unknown): YoutubeScraperInput {
   }
 
   return {
-    startUrls,
+    youtubeUrls,
     searchTerms,
     crawlerType,
     maxResults,
