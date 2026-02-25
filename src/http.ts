@@ -8,6 +8,28 @@ export type HttpFetchResult = {
   html: string;
 };
 
+export type YouTubeGateState = "none" | "consent_wall" | "challenge_wall" | "signin_interstitial";
+
+const CONSENT_MARKERS = [
+  "consent.youtube.com",
+  "before you continue to youtube",
+  "before you continue",
+  "accept all",
+  "i agree",
+];
+
+const CHALLENGE_MARKERS = [
+  "unusual traffic",
+  "captcha",
+  "our systems have detected unusual traffic",
+];
+
+const SIGNIN_MARKERS = [
+  "sign in to confirm",
+  "sign in to continue",
+  "accounts.google.com",
+];
+
 export async function fetchHtml(url: string, proxySettings: RuntimeProxySettings, headers?: Record<string, string>): Promise<HttpFetchResult> {
   const response = await proxyFetch(
     url,
@@ -47,13 +69,31 @@ export async function fetchContinuationJson(continuation: Continuation, proxySet
   }
 }
 
-export function looksBlocked(status: number, html: string): { blocked: boolean; reason?: string } {
+export function detectYouTubeGate(html: string, pageUrl = ""): { state: YouTubeGateState; reason?: string } {
+  const lower = html.toLowerCase();
+  const lowerUrl = pageUrl.toLowerCase();
+  const hasConsent = CONSENT_MARKERS.some((marker) => lower.includes(marker) || lowerUrl.includes(marker));
+  const hasChallenge = CHALLENGE_MARKERS.some((marker) => lower.includes(marker) || lowerUrl.includes(marker));
+  const hasSignin = SIGNIN_MARKERS.some((marker) => lower.includes(marker) || lowerUrl.includes(marker));
+  if (hasChallenge) {
+    return { state: "challenge_wall", reason: "challenge_or_consent_wall" };
+  }
+  if (hasConsent) {
+    return { state: "consent_wall", reason: "challenge_or_consent_wall" };
+  }
+  if (hasSignin) {
+    return { state: "signin_interstitial", reason: "challenge_or_consent_wall" };
+  }
+  return { state: "none" };
+}
+
+export function looksBlocked(status: number, html: string, pageUrl = ""): { blocked: boolean; reason?: string; state?: YouTubeGateState } {
   if (status === 403 || status === 429) {
     return { blocked: true, reason: `http_${status}` };
   }
-  const lower = html.toLowerCase();
-  if (lower.includes("captcha") || lower.includes("unusual traffic") || lower.includes("consent.youtube.com") || lower.includes("sign in to confirm")) {
-    return { blocked: true, reason: "challenge_or_consent_wall" };
+  const gate = detectYouTubeGate(html, pageUrl);
+  if (gate.state !== "none") {
+    return { blocked: true, reason: gate.reason, state: gate.state };
   }
-  return { blocked: false };
+  return { blocked: false, state: "none" };
 }

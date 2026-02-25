@@ -8,6 +8,7 @@ Standalone StealthDock Actor for scraping public YouTube metadata from videos, c
 - Emits normalized dataset records (`source_summary` and `video`)
 - Extracts core public metadata (titles, counts, channel info, durations, thumbnails, hashtags)
 - Hybrid fetching: HTTP + embedded JSON parsing first, Playwright fallback when needed
+- Browser fallback emits runtime telemetry events and includes best-effort consent-wall click handling
 - Best-effort pagination/continuation handling for list pages
 
 ## v1 limitations
@@ -16,6 +17,7 @@ Standalone StealthDock Actor for scraping public YouTube metadata from videos, c
 - No comments body scraping (count only, when available)
 - No dislikes
 - No authenticated/private content support
+- No CAPTCHA solving (browser fallback handles consent/interstitials best-effort only)
 
 ## Local usage
 

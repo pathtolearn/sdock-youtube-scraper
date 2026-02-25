@@ -24,6 +24,21 @@ describe("parseRuntimeInput", () => {
     expect(parsed.searchTerms).toEqual(["test term"]);
   });
 
+  it("ignores bare YouTube homepage URL when searchTerms are provided", () => {
+    const parsed = parseRuntimeInput({
+      youtubeUrls: ["https://youtube.com/"],
+      searchTerms: ["test"],
+    });
+    expect(parsed.youtubeUrls).toEqual([]);
+    expect(parsed.searchTerms).toEqual(["test"]);
+  });
+
+  it("rejects bare YouTube homepage URL as the only target with a clear message", () => {
+    expect(() => parseRuntimeInput({ youtubeUrls: ["https://youtube.com/"] })).toThrow(
+      "specific YouTube video/channel/playlist/search URLs",
+    );
+  });
+
   it("ignores unknown fields", () => {
     const parsed = parseRuntimeInput({ searchTerms: ["test"], unknownField: 123 });
     expect((parsed as Record<string, unknown>).unknownField).toBeUndefined();

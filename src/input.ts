@@ -164,6 +164,17 @@ function normalizeYoutubeUrl(raw: string): string {
   return parsed.toString();
 }
 
+function isYoutubeHomeUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname.replace(/\/+$/, "") || "/";
+    // Treat the bare homepage as a non-target placeholder. A search URL is /results.
+    return path === "/" && !parsed.searchParams.get("search_query");
+  } catch {
+    return false;
+  }
+}
+
 function validateDate(value: string | null, key: string): string | null {
   if (value === null) {
     return null;
@@ -233,13 +244,20 @@ export function parseRuntimeInput(raw: unknown): YoutubeScraperInput {
     }
   }
 
-  const youtubeUrls = [
+  const normalizedYoutubeUrls = [
     ...asStringArray(payload.youtubeUrls, "youtubeUrls"),
     ...asStringArray(payload.startUrls, "startUrls"),
   ].map(normalizeYoutubeUrl);
+  const youtubeHomePlaceholders = normalizedYoutubeUrls.filter(isYoutubeHomeUrl);
+  const youtubeUrls = normalizedYoutubeUrls.filter((url) => !isYoutubeHomeUrl(url));
   const searchTerms = asStringArray(payload.searchTerms, "searchTerms");
 
   if (youtubeUrls.length === 0 && searchTerms.length === 0) {
+    if (youtubeHomePlaceholders.length > 0) {
+      throw new InputValidationError(
+        "youtubeUrls must be specific YouTube video/channel/playlist/search URLs. For keyword scraping, leave youtubeUrls empty and use searchTerms.",
+      );
+    }
     throw new InputValidationError("At least one of youtubeUrls or searchTerms must be provided");
   }
 

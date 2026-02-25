@@ -7,7 +7,7 @@ import { parseContinuationPayload, parseChannelPage, parsePlaylistPage, parseSea
 import { ack, bootstrap, complete, enqueue, event, fail, lease, pushDataset } from "./runtimeClient";
 import { readProxySettings, proxyRuntimeEventPayload, type RuntimeProxySettings } from "./proxy";
 import { completionPolicyForStopReason, evaluateStopReason } from "./stopPolicy";
-import { fetchHtmlWithBrowser } from "./browserFallback";
+import { BrowserFetchError, fetchHtmlWithBrowser } from "./browserFallback";
 import { buildSearchUrlFromTerm, classifyYoutubeUrl, makeSourceId, sourceKindForSearchTerm, toSeedTaskFromClassified } from "./url";
 import type { OutputRecord, QueueTaskMetadata, YoutubeScraperInput, YoutubeVideo, SourceSummary } from "./types";
 
@@ -101,9 +101,14 @@ function mergeListingAndDetail(listing: QueueTaskMetadata["listingContext"], det
   return merged;
 }
 
-async function fetchWithFallback(url: string, input: YoutubeScraperInput, proxySettings: RuntimeProxySettings): Promise<{ status: number; url: string; html: string; usedBrowser: boolean }> {
+async function fetchWithFallback(
+  url: string,
+  input: YoutubeScraperInput,
+  proxySettings: RuntimeProxySettings,
+  requestId?: string,
+): Promise<{ status: number; url: string; html: string; usedBrowser: boolean }> {
   const http = await fetchHtml(url, proxySettings, { "user-agent": USER_AGENT });
-  const block = looksBlocked(http.status, http.html);
+  const block = looksBlocked(http.status, http.html, http.url);
   const artifacts = extractEmbeddedJson(http.html);
   const missingJson = !artifacts.ytInitialData && !artifacts.ytInitialPlayerResponse;
   if (!block.blocked && !missingJson) {
@@ -115,9 +120,42 @@ async function fetchWithFallback(url: string, input: YoutubeScraperInput, proxyS
     }
     throw new Error("parse_http: missing embedded YouTube JSON in http:fast mode");
   }
-  await event("youtube.fallback_to_browser", { url, reason: block.reason || (missingJson ? "missing_embedded_json" : "unknown") }, undefined, "runtime", "Falling back to browser", "warning");
-  const browser = await fetchHtmlWithBrowser(url, proxySettings);
-  return { ...browser, usedBrowser: true };
+  await event(
+    "youtube.fallback_to_browser",
+    { url, reason: block.reason || (missingJson ? "missing_embedded_json" : "unknown") },
+    requestId,
+    "runtime",
+    "Falling back to browser",
+    "warning",
+  );
+  try {
+    const browser = await fetchHtmlWithBrowser(url, proxySettings, {
+      requestedEngine: input.crawlerType,
+      telemetry: async (ev) => {
+        await event(ev.eventType, ev.payload, requestId, ev.stage || "browser", ev.message, ev.level || "info");
+      },
+    });
+    return { status: browser.status, url: browser.url, html: browser.html, usedBrowser: true };
+  } catch (error) {
+    if (error instanceof BrowserFetchError) {
+      await event(
+        "youtube.blocked_detected",
+        {
+          url,
+          phase: "browser",
+          code: error.code,
+          attempt: error.attempt,
+          state: error.state || null,
+          message: error.message,
+        },
+        requestId,
+        "browser",
+        "Browser fallback failed to bypass consent/challenge wall",
+        "warning",
+      );
+    }
+    throw error;
+  }
 }
 
 function maybeRawPayloads(enabled: boolean, artifacts: ReturnType<typeof extractEmbeddedJson>): Record<string, unknown> | undefined {
@@ -274,7 +312,7 @@ async function processTask(params: {
   }
 
   if (metadata.taskType === "enrich_video_detail") {
-    const fetched = await fetchWithFallback(url, input, proxySettings);
+    const fetched = await fetchWithFallback(url, input, proxySettings, requestId);
     const artifacts = extractEmbeddedJson(fetched.html);
     const parsed = parseVideoPage(artifacts, fetched.url);
     processedPagesCounter.value += 1;
@@ -290,8 +328,8 @@ async function processTask(params: {
     return { statusCode: fetched.status, records };
   }
 
-  const fetched = await fetchWithFallback(url, input, proxySettings);
-  const block = looksBlocked(fetched.status, fetched.html);
+  const fetched = await fetchWithFallback(url, input, proxySettings, requestId);
+  const block = looksBlocked(fetched.status, fetched.html, fetched.url);
   if (block.blocked) {
     await event("youtube.blocked_detected", { url, reason: block.reason }, requestId, "fetch", "Blocked response detected", "warning");
   }
